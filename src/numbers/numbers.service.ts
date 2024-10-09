@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNumberDto } from './dto/create-number.dto';
 import { UpdateNumberDto } from './dto/update-number.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Number } from './entities/number.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class NumbersService {
-  create(createNumberDto: CreateNumberDto) {
-    return 'This action adds a new number';
+  constructor(
+    @InjectRepository(Number) 
+    private readonly NumbersRepository: 
+    Repository<Number>){
+
   }
 
-  findAll() {
-    return `This action returns all numbers`;
+  async create(createNumberDto: CreateNumberDto) {
+    const number = this.NumbersRepository.create(createNumberDto);
+    return await this.NumbersRepository.save(number);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} number`;
+  async findAll() {
+    return await this.NumbersRepository.find();
   }
 
-  update(id: number, updateNumberDto: UpdateNumberDto) {
-    return `This action updates a #${id} number`;
+  async findOne(number_id: number) {
+    return await this.NumbersRepository.findOne({
+      where: { number_id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} number`;
+  async update(number_id: number, updateNumberDto: UpdateNumberDto) {
+    const number = await this.findOne(number_id);
+    if(!number){
+      throw new NotFoundException();
+    }
+    Object.assign(number, updateNumberDto)
+    return await this.NumbersRepository.save(number);
+  }
+
+  async remove(number_id: number) {
+    const number = await this.findOne(number_id);
+    if(!number){
+      throw new NotFoundException();
+    }
+    return await this.NumbersRepository.remove(number);
   }
 }

@@ -14,6 +14,12 @@ export class UsersService {
 
   }
 
+  //testing multiple records
+  // async createMultiple(createUserDto: CreateUserDto[]): Promise<User[]> {
+  //   const user = this.UsersRepository.create(createUserDto); // Create multiple records
+  //   return await this.UsersRepository.save(user); // Save multiple records at once
+  // }
+
   async create(createUserDto: CreateUserDto) {
     const user = this.UsersRepository.create(createUserDto);
 
@@ -26,7 +32,7 @@ export class UsersService {
 
   async findOne(user_id: number) {
     return await this.UsersRepository.findOne({
-      where: { user_id} });
+      where: { user_id } });
   }
 
   async update(user_id: number, updateUserDto: UpdateUserDto) {
